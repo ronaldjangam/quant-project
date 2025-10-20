@@ -1,0 +1,88 @@
+project:
+  name: "AI-Powered Pairs Trading Strategy"
+  version: "1.0.0"
+
+data:
+  universe: "sp500"  # Stock universe to analyze
+  start_date: "2020-01-01"
+  end_date: "2024-12-31"
+  data_source: "yfinance"  # or "alpha_vantage" or "polygon"
+
+pairs:
+  # Cointegration parameters
+  cointegration:
+    p_value_threshold: 0.05
+    lookback_period: 252  # trading days (1 year)
+    min_half_life: 1
+    max_half_life: 60
+  
+  # Clustering parameters
+  clustering:
+    method: "kmeans"  # or "dbscan"
+    n_clusters: 20
+    features: ["returns", "volatility"]
+    lookback_period: 252
+
+sentiment:
+  model: "vader"  # or "finbert" (transformer model)
+  lookback_days: 7  # days of news to aggregate
+  min_articles: 3  # minimum articles to calculate sentiment
+
+features:
+  # Technical indicators
+  technical:
+    sma_windows: [5, 10, 20, 50]
+    volatility_window: 20
+    zscore_window: 60
+  
+  # Feature engineering
+  lag_features: [1, 2, 3, 5]
+
+model:
+  type: "gradient_boosting"  # or "lstm" or "xgboost"
+  
+  # Gradient Boosting parameters
+  gradient_boosting:
+    n_estimators: 200
+    learning_rate: 0.05
+    max_depth: 5
+    min_samples_split: 20
+  
+  # LSTM parameters
+  lstm:
+    units: [64, 32]
+    dropout: 0.2
+    epochs: 50
+    batch_size: 32
+    lookback: 20
+  
+  # Training
+  train_test_split: 0.8
+  validation_split: 0.2
+
+strategy:
+  # Entry/Exit thresholds
+  entry_zscore_threshold: 2.0
+  exit_zscore_threshold: 0.5
+  stop_loss_zscore: 3.5
+  
+  # Position sizing
+  max_positions: 10
+  position_size_method: "equal_weight"  # or "volatility_weighted"
+  
+  # Risk management
+  max_portfolio_leverage: 2.0
+  max_position_size: 0.2  # 20% of portfolio per pair
+
+backtesting:
+  initial_capital: 100000
+  transaction_cost: 0.001  # 0.1%
+  slippage: 0.0005  # 0.05%
+  rebalance_frequency: "daily"
+  
+  # Performance metrics
+  risk_free_rate: 0.02  # 2% annual
+
+logging:
+  level: "INFO"
+  file: "logs/trading.log"
